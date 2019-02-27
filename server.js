@@ -23,11 +23,9 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(bodyParser.json());
 app.use('/api/logs', attendantRoute);
 
-if(process.env.NODE_ENV == 'production') {
     app.use(express.static(path.join(__dirname, 'client', 'build')));
     app.listen('*', (req, res) => {
         res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
     })
-}
 
 app.listen(PORT, () => console.log(`Your app is running on port ${PORT}`));
