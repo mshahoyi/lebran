@@ -3,12 +3,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const attendantRoute = require('./routes/api/logsAPI');
 const mongoose = require('mongoose');
-const URI_STRING = require('./config/db').URI_STRING;
+const path = require('path');
+require('dotenv').config();
 
 const db = mongoose.connection;
 db.on('error', e => console.log('database connection error: ' + e));
 db.on('open', () => console.log('connection to database succesfull'));
-mongoose.connect(URI_STRING, { useNewUrlParser: true })
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true })
 
 const app = express();
 const PORT = process.env.PORT || 7600;
@@ -21,5 +22,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use(bodyParser.json());
 app.use('/api/logs', attendantRoute);
+
+if(process.env.NODE_ENV == 'production') {
+    app.use(express.static(path.join(__dirname, 'client', 'build')));
+    app.listen('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+    })
+}
 
 app.listen(PORT, () => console.log(`Your app is running on port ${PORT}`));
